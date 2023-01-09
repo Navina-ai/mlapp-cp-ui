@@ -1,8 +1,8 @@
 <template>
   <v-app id="inspire">
-    <v-content>
+    <v-main>
       <v-btn color="white" class="black--text" dark @click="logout">Logout</v-btn>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 

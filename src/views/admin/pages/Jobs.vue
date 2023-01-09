@@ -20,7 +20,7 @@
             <v-icon class="mt-n1 pr-2">featured_play_list</v-icon>
             Jobs
           </v-toolbar-title>
-           <v-flex xs2 style="margin-left: 20px;">
+          <v-flex xs2 style="margin-left: 20px;">
             <v-select v-model="pipeline" :items="available_pipelines" label="Pipeline" hide-details clearable></v-select>
           </v-flex>
           <v-flex xs2>
@@ -165,9 +165,6 @@ export default {
     available_asset_labels (){
       return this.$store.getters['jobs/getAvailableAssetLabels'] || [];
     },
-    available_environments (){
-      return ['dev','staging','production'];
-    },
     available_pipelines (){
       return this.$store.getters['jobs/getAvailablePipelines'] || [];
     },
@@ -187,26 +184,33 @@ export default {
     },
     filteredItems() {
       var self = this;
-      var filter_by_asset_name = this.jobs.filter((i) => {
-        return !self.currentAsset || (i.data && i.data[0].asset_name == self.currentAsset);
-      });
-      var filter_by_asset_label = filter_by_asset_name.filter((i) => {
-        return !self._data.asset_label || (i.data && i.data[0].asset_label == self._data.asset_label);
-      });
-      var filter_by_environment = filter_by_asset_label.filter((i) => {
-        var environment = i.data && i.data[0].environment;
-        if(environment == "prod"){
-          environment = "production";
-        }
-        return !self.currentEnv || (environment == self.currentEnv);
-      });
-      var filter_by_pipeline = filter_by_environment.filter((i) => {
-        return !self._data.pipeline || (i.data[0].pipeline == self._data.pipeline);
-      });
-      var filter_by_status_code = filter_by_pipeline.filter((i) => {
-        return !self._data.status_code || (i.status_code.toString() == self._data.status_code.toString());
-      });
-      return filter_by_status_code;
+      var jobs = this.jobs;
+      if (self.currentAsset) {
+        jobs = jobs.filter((i) => {
+          return i.data && i.data[0].asset_name == self.currentAsset;
+        });
+      }
+      if (self.currentEnv) {
+        jobs = jobs.filter((i) => {
+          return i.data && i.data[0].environment == self.currentEnv;
+        });
+      }
+      if (self._data.asset_label) {
+        jobs = jobs.filter((i) => {
+          return i.data && i.data[0].asset_label == self._data.asset_label;
+        });
+      }
+      if (self._data.pipeline) {
+        jobs = jobs.filter((i) => {
+          return i.data[0].pipeline == self._data.pipeline;
+        });
+      }
+      if (self._data.status_code) {
+        jobs = jobs.filter((i) => {
+          return i.status_code.toString() == self._data.status_code.toString();
+        });
+      }
+      return jobs;
     },
     remaining_queue (){
       return this.jobs.filter((i) => {
@@ -251,30 +255,30 @@ export default {
       var prefix_job_id = this.current_job["id"];
       var prefix_model_id = this.current_job["data"] && ((typeof this.current_job['data'] == 'string') ? JSON.parse(this.current_job["data"])[0]["model_id"] : this.current_job["data"][0]["model_id"]);
       
-      this.$store.dispatch('files/queryFileStorage', prefix_job_id).then(function(){        
-        if(this.files["config"] && this.files["config"].length > 0){
+      this.$store.dispatch('files/queryFileStorage', prefix_job_id).then(function(){
+        if(this.files["mlapp-configs"] && this.files["mlapp-configs"].length > 0){
           this.$store.dispatch('files/streamFile', {
-            bucket: "configs",
-            key: this.files["config"][0]["file_name"],
+            bucket: "mlapp-configs",
+            key: this.files["mlapp-configs"][0]["file_name"],
             callback_function: 'updateCurrentConfigFile',
             loading_commit: 'setConfigLoading'
           });
         }
 
-        if(this.files["logger"] && this.files["logger"].length > 0){
+        if(this.files["mlapp-logs"] && this.files["mlapp-logs"].length > 0){
           this.$store.dispatch('files/streamFile', {
-            bucket: "logs",
-            key: this.files["logger"][0]["file_name"],
+            bucket: "mlapp-logs",
+            key: this.files["mlapp-logs"][0]["file_name"],
             callback_function: 'updateCurrentLoggerFile',
             loading_commit: 'setLoggerLoading'
           });
         }
         else if(prefix_model_id){
           this.$store.dispatch('files/queryFileStorage', prefix_model_id).then(function(){
-            if(this.files["logger"] && this.files["logger"].length > 0){
+            if(this.files["mlapp-logs"] && this.files["mlapp-logs"].length > 0){
               this.$store.dispatch('files/streamFile', {
-                bucket: "logs",
-                key: this.files["logger"][0]["file_name"],
+                bucket: "mlapp-logs",
+                key: this.files["mlapp-logs"][0]["file_name"],
                 callback_function: 'updateCurrentLoggerFile',
                 loading_commit: 'setLoggerLoading'
               });

@@ -5,8 +5,9 @@ import store from './store'
 import router from './router'
 import axios from 'axios'
 import global_config from './../config'
+import VueMoment from "vue-moment";
 
-Vue.use(require('vue-moment'));
+Vue.use(VueMoment);
 
 Vue.config.productionTip = false
 axios.defaults.withCredentials = true;

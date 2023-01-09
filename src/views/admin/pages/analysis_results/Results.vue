@@ -20,6 +20,9 @@
               Results
           </v-toolbar-title>
           <v-flex xs2 style="margin-left: 20px;">
+            <v-select v-model="pipeline" :items="available_pipelines" label="Pipeline" hide-details clearable></v-select>
+          </v-flex>
+          <v-flex xs2 style="margin-left: 20px;">
             <v-select v-model="asset_label" :items="available_assetlabels" label="Labels" hide-details clearable></v-select>
           </v-flex>
           <v-flex xs3 style="margin-left: 20px;">
@@ -43,11 +46,13 @@
         <tr class="table-row" @click="dialogModel(item)" v-bind:class="{ selected: isSelectedModel(item.model_id), highlighted: show_quick_actions==item.model_id }">
           <td>{{ item.model_id }}</td>
           <td>{{ item.asset_name }} {{ item.json_properties.asset_label }}</td>
+          <td>{{ item.pipeline }}</td>
           <td>{{ item.environment }}</td>
           <td>{{ item.json_properties.deploy_version }}</td>
           <template v-for="(_, index) in accuracies.length">
             <td :key="index">
-              {{ item.json_metadata.models && item.json_metadata.models.scores && item.json_metadata.models.scores[accuracies[index]] && item.json_metadata.models.scores[accuracies[index]].toFixed(2) }}
+              {{ (item.json_metadata.models && item.json_metadata.models.scores) ? (item.json_metadata.models.scores[accuracies[index]] === "number" ?
+                 item.json_metadata.models.scores[accuracies[index]].toFixed(2) : item.json_metadata.models.scores[accuracies[index]]) : "" }}
             </td>
           </template>
           <td>{{ item.created_at | moment(timestampFormat()) }}</td>
@@ -142,12 +147,13 @@ export default {
     sortingBy: 'created_at',
     descending: true,
     asset_label: null,
+    pipeline: null,
     environment: null,
     accuracies: [],
     headers_left: [
       { text: 'Model ID', value: 'model_id'},
       { text: 'Asset Name & Label', value: 'asset_name'},
-      // { text: 'Asset Label', value: 'json_properties.asset_label', width: '20%'},
+      { text: 'Pipeline', value: 'pipeline'},
       { text: 'Environment', value: 'environment'},
       { text: 'Version', value: 'build_number'},                      
     ],
@@ -175,6 +181,9 @@ export default {
     available_asset_names (){
       return this.$store.getters['models/getAvailableAssetNames'] || [];
     },
+    available_pipelines (){
+      return this.$store.getters['models/getAvailablePipelines'] || [];
+    },
     available_accuracies (){
       return this.$store.getters['models/getAvailableAccuracies'] || [];
     },
@@ -188,16 +197,28 @@ export default {
       return this.$store.getters['environments/getCurrentEnv'] || null;
     },
     filteredItems() {
-      return this.processes.filter((i) => {
-        return (
-          (!this.currentAsset || (i.asset_name == this.currentAsset)) &&
-          (!this.asset_label || i.json_properties.asset_label == this.asset_label) &&
-          (!this.currentEnv || (i.environment == this.currentEnv))
-        );
-      })
-    },
-    available_environments (){
-      return ['dev','staging','production']; 
+      var filtered_processes = this.processes;
+      if (this.currentAsset) {
+        filtered_processes = filtered_processes.filter((i) => {
+          return i.asset_name == this.currentAsset;
+        });
+      }
+      if (this.currentEnv) {
+        filtered_processes = filtered_processes.filter((i) => {
+          return i.environment == this.currentEnv;
+        });
+      }
+      if (this.asset_label) {
+        filtered_processes = filtered_processes.filter((i) => {
+          return i.json_properties.asset_label == this.asset_label;
+        });
+      }
+      if (this.pipeline) {
+        filtered_processes = filtered_processes.filter((i) => {
+          return i.pipeline == this.pipeline;
+        });
+      }
+      return filtered_processes;
     },
     computedHeaders(){
       var addedHeaders = [];
@@ -220,7 +241,8 @@ export default {
 
   methods: {
     initialize() {
-      this.$store.dispatch('models/fetchTrainModels')
+      this.$store.dispatch('models/fetchAvailablePipelines')
+      this.$store.dispatch('models/fetchModels')
       this.$store.dispatch('models/fetchModelsHistory')
     },
     timestampFormat() {

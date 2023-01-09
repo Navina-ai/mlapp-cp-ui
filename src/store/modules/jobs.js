@@ -84,7 +84,7 @@ export default {
         var pipeline = null;
         var status_code = item.status_code;
 
-        if (item.data){     
+        if (item.data){
           pipeline = item.json_data.pipeline;           
           asset_name = item.json_data.asset_name;
           asset_label = item.json_data.asset_label;

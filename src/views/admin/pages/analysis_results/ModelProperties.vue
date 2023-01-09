@@ -122,30 +122,22 @@ export default {
         },
         fetchFiles() {            
             this.$store.dispatch('files/queryFileStorage', this.model.model_id).then(function(){                
-                if(this.files["logger"] && this.files["logger"].length > 0){
+                if(this.files["mlapp-logs"] && this.files["mlapp-logs"].length > 0){
                     this.$store.dispatch('files/streamFile', {
-                        bucket: "logs",
-                        key: this.files["logger"][0]["file_name"],
+                        bucket: "mlapp-logs",
+                        key: this.files["mlapp-logs"][0]["file_name"],
                         callback_function: 'updateCurrentLoggerFile',
                         loading_commit: 'setLoggerLoading'
                     });
                 }
-                if(this.files["config"] && this.files["config"].length > 0){
+                if(this.files["mlapp-configs"] && this.files["mlapp-configs"].length > 0){
                     this.$store.dispatch('files/streamFile', {
-                        bucket: "configs",
-                        key: this.files["config"][0]["file_name"],
+                        bucket: "mlapp-configs",
+                        key: this.files["mlapp-configs"][0]["file_name"],
                         callback_function: 'updateCurrentConfigFile',
                         loading_commit: 'setConfigLoading'
                     });
                 }
-                // if(this.files[imgs] && this.files[imgs].length > 0){
-                //     this.$store.dispatch('files/streamImage', {
-                //         bucket: imgs,
-                //         key: this.files[imgs][0]["file_name"],
-                //         callback_function: 'updateCurrentImageFile',
-                //         loading_commit: 'setImageLoading'
-                //     });
-                // }
             }.bind(this));
         },
         copyToClipboard(value){

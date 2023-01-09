@@ -14,6 +14,7 @@ export default {
     available_asset_names: [],
     available_accuracies: [],
     available_asset_labels: [],
+    available_pipelines: [],
     dict: {},
     loading: true,
     stats: {
@@ -86,6 +87,9 @@ export default {
     updateAvailableAssetLabels(state, asset_labels){
       state.available_asset_labels = Object.keys(asset_labels);
     },
+    updateAvailablePipelines(state, pipelines){
+      state.available_pipelines = pipelines;
+    },
     updateCurrentModelsHistory(state, models_history){
       state.models_history = models_history;
     },
@@ -120,7 +124,7 @@ export default {
     async fetchModelStats({ commit }, model_obj){
       const response = await axios.get("/api/models/stats/"+model_obj.asset_name+"/"+model_obj.asset_label_name);
       commit('updateCurrentModelStats', response.data);
-    }, 
+    },
     async fetchTrainModels({ commit }){
       const response = await axios.get("/api/models/models/train");
 
@@ -258,6 +262,10 @@ export default {
       commit('updateCurrentModelsHistory', response.data);
       commit('updateModelsHistoryDictionary', response.data);
     },
+    async fetchAvailablePipelines({ commit }){
+      const available_pipelines = await axios.get("/api/models/available_pipelines")
+      commit('updateAvailablePipelines', available_pipelines.data);
+    },
     selectModel({ commit, dispatch }, data){   
       console.log(commit);  
       var dataToPost = {
@@ -326,6 +334,9 @@ export default {
     },
     getAvailableAssetLabels(state){
       return state.available_asset_labels;
+    },
+    getAvailablePipelines(state){
+      return state.available_pipelines;
     },
     getSelectedModels(state){
       var selected_arr = [];

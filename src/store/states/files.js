@@ -59,7 +59,7 @@ export default {
         const response = await axios.get("/api/files/query/" + prefix);
         commit('setLoading', false);
         try{
-          if(response.data["logger"] && !response.data["logger"].length){
+          if(response.data["mlapp-logs"] && !response.data["mlapp-logs"].length){
             commit('setLoggerLoading', false);
           }
         }
@@ -67,7 +67,7 @@ export default {
           console.error(e);
         }
         try{
-          if(response.data["config"] && !response.data["config"].length){
+          if(response.data["mlapp-configs"] && !response.data["mlapp-configs"].length){
             commit('setConfigLoading', false);
           }  
         }

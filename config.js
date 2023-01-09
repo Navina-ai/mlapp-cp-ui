@@ -32,9 +32,19 @@ String.prototype.parseProp = function () {
         return obj;		
 };
 
+const env_config = {
+    "VITE_BASE_URL": "http://localhost:3000",
+    "VITE_FILE_STORAGE_URL": null,
+    "VITE_LOGIN_REQUIRED": false,
+    "VITE_LOGIN_TYPE": "basic",
+    "VITE_LOGIN_BACKGROUND": "",
+    "VITE_LOGO": "",
+    "VITE_DEPLOYMENT": "default"
+};
+
 // Do not modify information below unless you know what you are doing!
 const global_config = {
-    "deployment": env_config.VUE_APP_DEPLOYMENT || process.env.VUE_APP_DEPLOYMENT || "default",
+    "deployment": import.meta.env.VITE_DEPLOYMENT || env_config.VITE_DEPLOYMENT || "default",
     "app": {
         "name": clientName,
         "app_name": appName,
@@ -49,20 +59,20 @@ const global_config = {
         "supported_languages": supportedLanguages,
         "locale": locale,
         // eslint-disable-next-line
-        "background_image": env_config.VUE_APP_LOGIN_BACKGROUND || process.env.VUE_APP_LOGIN_BACKGROUND,
+        "background_image": import.meta.env.VITE_LOGIN_BACKGROUND || env_config.VITE_LOGIN_BACKGROUND,
         // eslint-disable-next-line
-        "logo": env_config.VUE_APP_LOGO || process.env.VUE_APP_LOGO
+        "logo": import.meta.env.VITE_LOGO || env_config.VITE_LOGO
     },
     "api": {
         // eslint-disable-next-line
-        "base_url": env_config.VUE_APP_BASE_URL || process.env.VUE_APP_BASE_URL
+        "base_url": import.meta.env.VITE_BASE_URL || env_config.VITE_BASE_URL
     },
     // eslint-disable-next-line
-    "file_storage_url": env_config.VUE_APP_FILE_STORAGE_URL || process.env.VUE_APP_FILE_STORAGE_URL,
+    "file_storage_url": import.meta.env.VITE_FILE_STORAGE_URL || env_config.VITE_FILE_STORAGE_URL,
     "admin": defaultAdmin,
     // eslint-disable-next-line
-    "login_required": env_config.VUE_APP_LOGIN_REQUIRED ? (env_config.VUE_APP_LOGIN_REQUIRED.toString() == 'true') : (process.env.VUE_APP_LOGIN_REQUIRED ? (process.env.VUE_APP_LOGIN_REQUIRED.toString() == "true") : true),
+    "login_required": import.meta.env.VITE_LOGIN_REQUIRED ? (import.meta.env.VITE_LOGIN_REQUIRED.toString() == "true") : (env_config.VITE_LOGIN_REQUIRED ? (env_config.VITE_LOGIN_REQUIRED.toString() == 'true') : true),
     // eslint-disable-next-line
-	"login_type": env_config.VUE_APP_LOGIN_TYPE || process.env.VUE_APP_LOGIN_TYPE || "basic" // basic or w3
+	"login_type": import.meta.env.VITE_LOGIN_TYPE || env_config.VITE_LOGIN_TYPE || "basic" // basic or w3
 };
 export default global_config;

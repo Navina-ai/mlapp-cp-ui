@@ -29,7 +29,7 @@
       </v-toolbar-items>
     </v-app-bar>
 
-    <v-content style="height: 100%;"> 
+    <v-main style="height: 100%;">
       <v-container fluid style="height: 100%;" no-gutters>
         <v-row style="height: 100%;" no-gutters>
           <v-col style="height: 100%;">
@@ -37,7 +37,7 @@
           </v-col>
         </v-row>
       </v-container>
-    </v-content>
+    </v-main>
 
 
     <v-footer app fixed dark color="indigo">

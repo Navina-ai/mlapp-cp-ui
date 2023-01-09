@@ -85,7 +85,7 @@
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
-    <v-content v-if="selected_upload_option==upload_options[1]" style="padding:10px; background-color: #424242">
+    <v-main v-if="selected_upload_option==upload_options[1]" style="padding:10px; background-color: #424242">
       <v-file-input
           v-model="files"
           color="blue accent-4"
@@ -119,7 +119,7 @@
         <v-btn color="primary" @click="uploadFile()" style="float:right">
           Run Configs
         </v-btn>
-    </v-content>
+    </v-main>
 
 <v-dialog v-model="dialog" width="80%">
   <v-card>

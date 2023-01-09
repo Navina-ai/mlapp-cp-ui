@@ -1,7 +1,7 @@
 <template>
   <div>
   <v-app id="inspire">
-    <v-content>
+    <v-main>
       <v-container fluid fill-height>
         <div class="bg" :style="{ backgroundImage: `url(${background_image})` }"></div>
         <v-layout align-center justify-center>
@@ -30,7 +30,7 @@
           <!-- </v-flex> -->
         </v-layout>
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
   </div>  
 </template>

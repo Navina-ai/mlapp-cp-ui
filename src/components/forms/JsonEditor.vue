@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
     <div class="jsoneditor-container" :class="{'max-box':max,'min-box':!max}" :style="getHeight">
         <div ref="jsoneditor" class="jsoneditor-box"></div>
         <button type="button" @click="max = !max" class="max-btn" size="mini" v-if="options.mode == 'code' && plus">

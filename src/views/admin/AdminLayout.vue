@@ -31,25 +31,38 @@
             label="Asset" 
             style="width: 300px !important; max-width: 300px !important; margin-right: 10px;"
             single-line hide-details clearable></v-select>
-      
-      <div v-show="getDeployment == 'ibmcloud'">
+
       <b>Env:&nbsp;</b>
       <v-select v-model="selected_environment" 
             @change="updateEnvironment($event)" 
             style="width: 200px !important; max-width: 200px !important; margin-right: 10px;"
             :items="available_environments" 
             label="Env" single-line hide-details clearable></v-select>
-        <div class="version_con"><div><span style="margin: 0 10px;"><b>Dev: </b></span> <span style="color: #fff;">v{{versions.dev.value}}</span><span v-show="versions.dev.value!=versions.dev.updating_to" class="updating_to_lbl"> (Updating to v{{versions.dev.updating_to}})</span></div></div>        
-        <div class="version_con"><div><span style="margin: 0 10px;"><b>Staging: </b></span> <span style="color: #fff;">v{{versions.staging.value}}</span><span v-show="versions.staging.value!=versions.staging.updating_to" class="updating_to_lbl"> (Updating to v{{versions.staging.updating_to}})</span></div></div>
-        <div class="version_con"><div><span style="margin: 0 10px;"><b>Prod: </b></span> <span style="color: #fff;">v{{versions.prod.value}}</span><span v-show="versions.prod.value!=versions.prod.updating_to" class="updating_to_lbl"> (Updating to v{{versions.prod.updating_to}})</span></div></div>
-      </div>
-      <div v-show="getDeployment != 'ibmcloud'">
-        <div class="version_con">
-          <span style="margin: 0 10px;"><b>Env:</b></span>
-          <span style="color: #fff;">{{ selected_environment }} &nbsp;</span>
-        </div>        
-      </div>
-      <v-toolbar-items class="hidden-sm-and-down">
+        <v-dialog v-model="dialog" width="80%">
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on">Register A New Environment</v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="headline">Register A New Environment</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field v-model="editedItem.env" label="Environment Name"></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click="close">Cancel</v-btn>
+              <v-btn color="primary" @click="save">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-toolbar-items class="hidden-sm-and-down">
         <v-menu offset-y>
           <template v-slot:activator="{ on }">
             <v-btn icon v-on="on">
@@ -64,11 +77,11 @@
       </v-toolbar-items>
     </v-app-bar>
 
-    <v-content>
+    <v-main>
       <v-container fluid>
           <router-view></router-view>
       </v-container>
-    </v-content>
+    </v-main>
 
 
     <!-- <v-footer app>
@@ -86,6 +99,8 @@ import ListTile from '../../components/layout/ListTile.vue'
 export default {
   name: 'Layout',
   data: () => ({
+    dialog: false,
+    editedItem: {},
     drawer: false,
     show_app: false,
     selected_asset_name: null,
@@ -102,7 +117,7 @@ export default {
       return this.$store.getters['templates/getAvailableAssetsNames'] || [];
     },
     available_environments (){
-      return ['dev','staging','production']; 
+      return this.$store.getters['environments/getEnvironments'] || [];
     },
     currentAsset(){
       return this.$store.getters['templates/getCurrentAsset'] || null;
@@ -130,7 +145,17 @@ export default {
     },
     updateEnvironment() {
       this.$store.dispatch('environments/updateEnv', this.selected_environment);
-    }     
+    },
+    close () {
+      this.dialog = false
+      setTimeout(() => {
+        this.editedItem = {}
+      }, 300)
+    },
+    save () {
+      this.$store.dispatch('environments/createEnvironment', this.editedItem);
+      this.close()
+    },
   },
   watch: {
     currentAsset(new_value){
@@ -139,6 +164,9 @@ export default {
     currentEnv(new_value){
       this.selected_environment = new_value;
     },
+    dialog(val) {
+      val || this.close();
+    }
   },
   created() {
     this.initialize()
