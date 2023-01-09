@@ -34,9 +34,12 @@ export default {
         }
     },
     watch: {
-        current_index(new_value){
+        current_index: {
+          immediate: true,
+          handler(new_value) {
             this.streamImage(new_value);
             this.current_index = new_value;
+          }
         },
         images(new_value){
             if(new_value && new_value.length){
