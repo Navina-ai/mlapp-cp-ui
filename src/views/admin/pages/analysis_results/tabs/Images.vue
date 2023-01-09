@@ -20,7 +20,7 @@
 <script>
 export default {
     data: () => ({
-        img_bucket: "png",
+        img_bucket: "mlapp-imgs",
         current_index: 0
     }),
     props: {
