@@ -6,7 +6,7 @@
                     <v-progress-circular v-if="isImageLoading" :size="70" :width="7" indeterminate></v-progress-circular>
                 </div>
                 <v-row align="center" justify="center" v-if="!isImageLoading">
-                    <img v-bind:src="dataUrl()" style="width:40%;height:auto;" />
+                    <img v-bind:src="dataUrl()" style="width:35%;height:auto;" />
                 </v-row>
             </v-carousel-item>
         </v-carousel>
