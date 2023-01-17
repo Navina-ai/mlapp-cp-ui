@@ -27,21 +27,41 @@ export default {
         state.current_env = env;
       },
     updateVersions(state, versions){
-      for (var i=0;i<versions.length;i++){
-        state.versions[versions[i].env] = {value: versions[i].version, updating_to: versions[i].updating_to};
-        if (state.environments.indexOf(versions[i].env) === -1) {
-            state.environments.push(versions[i].env);
-        }
-      }
+      state.versions = versions;
+    },
+    updateEnvironments(state, environments){
+      state.environments = environments;
     },
     updateCurrentEnv(state, env){
       state.current_env = env;
+      localStorage.setItem('env', state.current_env)
     } 
   },
   actions: {    
-    async getVersions({ commit }){
+    async getVersions({ commit, state }){
       const response = await axios.get("/api/environments");
-      commit('updateVersions', response.data);      
+      const new_versions = response.data;
+      const versions = Object.assign({}, state.versions);
+      const environments = [...state.environments];
+
+      for (var i=0;i<new_versions.length;i++){
+        versions[new_versions[i].env] = {value: new_versions[i].version, updating_to: new_versions[i].updating_to};
+        if (environments.indexOf(new_versions[i].env) === -1) {
+            environments.push(new_versions[i].env);
+        }
+      }
+      commit('updateVersions', versions);
+      commit('updateEnvironments', environments);
+
+      if (environments.length > 0){
+        var env_ls = localStorage.getItem('env')
+        if(env_ls && environments.indexOf(env_ls) > -1){
+          commit('updateCurrentEnv', env_ls);
+        }
+        else{
+          commit('updateCurrentEnv', environments[0]);
+        }
+      }
     },
     createEnvironment({ commit, state }, environmentToCreate){
       if (state.environments.includes(environmentToCreate.env)) {
